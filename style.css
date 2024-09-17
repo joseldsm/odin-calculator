@@ -1,0 +1,34 @@
+body {
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    height: 50px;
+    width: 90px;
+    flex-grow: 1;
+}
+
+.large {
+    width: 195px;
+}
+
+#calculator {
+    width: 415px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+#display {
+    height: 50px;
+    background-color: white;
+    border: 1px solid black;
+}
+
+#buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
