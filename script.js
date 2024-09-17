@@ -12,3 +12,12 @@ function operate(operator, num1, num2) {
             return "not a valid operator";
       }
 }
+
+let buttons =  document.querySelectorAll("button");
+let display = document.querySelector("#display");
+
+buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+        display.textContent = button.textContent;
+})
+});

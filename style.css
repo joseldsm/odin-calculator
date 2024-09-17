@@ -9,10 +9,6 @@ button {
     flex-grow: 1;
 }
 
-.large {
-    width: 195px;
-}
-
 #calculator {
     width: 415px;
     display: flex;
