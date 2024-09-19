@@ -1,34 +1,39 @@
 //CREATING CALCULATOR
-const buttonsArray = [
-    {text: 0, class: "number", position: 14},
-    {text: 1, class: "number", position: 9},
-    {text: 2, class: "number", position: 10},
-    {text: 3, class: "number", position: 11},
-    {text: 4, class: "number", position: 5},
-    {text: 5, class: "number", position: 6},
-    {text: 6, class: "number", position: 7},
-    {text: 7, class: "number", position: 1},
-    {text: 8, class: "number", position: 2},
-    {text: 9, class: "number", position: 3},
-    {text: "+", class: "operator", position: 16},
-    {text: "-", class: "operator", position: 12},
-    {text: "\u00D7", class: "operator", position: 8},
-    {text: "%", class: "operator", position: 4},
-    {text: "=", class: "result", position: 15},
-    {text: "AC", class: "clear", position: 13},
+const buttonsObjects = [
+    {value: "0", type: "number", position: 14},
+    {value: "1", type: "number", position: 9},
+    {value: "2", type: "number", position: 10},
+    {value: "3", type: "number", position: 11},
+    {value: "4", type: "number", position: 5},
+    {value: "5", type: "number", position: 6},
+    {value: "6", type: "number", position: 7},
+    {value: "7", type: "number", position: 1},
+    {value: "8", type: "number", position: 2},
+    {value: "9", type: "number", position: 3},
+    {value: "+", type: "operator", position: 16},
+    {value: "-", type: "operator", position: 12},
+    {value: "\u00D7", type: "operator", position: 8},
+    {value: "%", type: "operator", position: 4},
+    {value: "=", type: "result", position: 18},
+    {value: ".", type: "dot", position: 15},
+    {value: "AC", type: "clear", position: 13},
+    {value: "<==", type: "backspace", position: 17},
 ]
 
-buttonsArray.sort((a, b) => a.position - b.position)
-            .forEach((item) => {
-    const buttons = document.querySelector("#buttons");
-    const button = document.createElement("button");
-    button.className = item.class;
-    button.textContent = item.text;
-    buttons.appendChild(button);
+buttonsObjects
+    .sort((a, b) => a.position - b.position)
+    .forEach((item) => {
+        const buttons = document.querySelector("#buttons");
+        const button = document.createElement("button");
+        button.textContent = item.value;
+        buttons.appendChild(button);
 });
 
 //OPERATORS CALCULATION
-function operate(operator, a, b) {
+function operate(operator, a, b) {   
+    a = Number(a);
+    b = Number(b);
+
     switch (operator) {
         case "+":
             return a + b;
@@ -37,70 +42,80 @@ function operate(operator, a, b) {
         case "\u00D7":
             return a * b;
         case "%":
-            return a / b;
-        default:
-            return "not a valid operator";
+            if (b !== 0) {
+                return a / b;
+            } else {
+                return "MATH ERROR"};
       }
 }
 
-let buttonsNumber =  document.querySelectorAll(".number");
-let buttonsOperator = document.querySelectorAll(".operator");
-let buttonResult = document.querySelector(".result");
-let buttonClear = document.querySelector(".clear");
+//DISPLAY AND CALCULATION ARRAY INIT
 let display = document.querySelector("#display");
-let calculation = [];
+display.textContent = "0";
 
-//CLICK NUMBERS
-buttonsNumber.forEach((button) => {
-        button.addEventListener("click", () => {
-            display.textContent += button.textContent;
-            calculation.push(Number(button.textContent));
-})
-});
+let dotDetector = false;
+let number1 = "0";
+let operator = number2 = "";
 
-//CLICK OPERATORS
-buttonsOperator.forEach((button) => {
+//CLICK BUTTONS
+let buttons = document.querySelectorAll("button");
+buttons.forEach((button) => {
     button.addEventListener("click", () => {
-        display.textContent += button.textContent;
-        calculation.push(button.textContent);
-})
-});
+        let buttonClicked = buttonsObjects.find((object) => object.value === button.textContent);
 
-//CLICK =
-buttonResult.addEventListener("click", () => {
-    console.table(calculation);
-    let calculationCleaned = cleaningCalc(calculation);
-    console.table(calculationCleaned);
-    let result =  operate(calculationCleaned[1], calculationCleaned[0], calculationCleaned[2]);
-    display.textContent = result;
-    calculation = [result];
-})
-
-//CLICK AC
-buttonClear.addEventListener("click", () => {
-    display.textContent = "";
-    calculation = [];
-})
-
-//CLEAN ARRAY : GATHER NUMBERS, CHECK IF FORMAT IS OK.
-function cleaningCalc(array) {
-    let operatorDetector = 0;
-    let numberDetector = 0;
-    let cleanedArray = ["","",""];
-
-    for (let i = 0; i < array.length; i++) {
-        if (typeof(array[i]) === 'number' && operatorDetector === 0) {
-            cleanedArray[0] += String(array[i]);
-            numberDetector = 1;
-        } else if (typeof(array[i]) !== 'number' && numberDetector === 1) {
-            cleanedArray[1] = (array[i]);
-            operatorDetector++;
-        } else if (typeof(array[i]) === 'number' && operatorDetector === 1) {
-            cleanedArray[2] += String(array[i]);
-        } else {
-            alert("error");
-            break;
+        switch (buttonClicked.type) {
+            case "dot":
+                if (dotDetector === false && operator === "") {
+                    number1 += buttonClicked.value;
+                    display.textContent = number1 ;
+                    dotDetector = true;
+                } else if (dotDetector === false && operator !== "") {
+                    number2 += buttonClicked.value;
+                    display.textContent = number2 ;
+                    dotDetector = true;
+                }
+                break;
+            case "number":
+                if (operator === "") {
+                    if (number1 === "0" || number1 === "MATH ERROR") {
+                        display.textContent = "";
+                        number1 = "";
+                    }
+                    number1 += buttonClicked.value;
+                    display.textContent = number1;
+                } else if (number1 !== "" && operator !== "") {
+                    number2 += buttonClicked.value;
+                    display.textContent = number2;
+                }
+                break;
+            case "operator":
+                if (operator === "" && number1 !== "MATH ERROR") {
+                    operator = display.textContent = buttonClicked.value;
+                    dotDetector = false;
+                }
+                break;
+            case "result":
+                if (number1 !== "" && number2 !== "" && operator !== "") {
+                    number1 = String(operate(operator, Number(number1), Number(number2)));
+                    display.textContent = number1;
+                } else if (number1 !== "" && number2 === "" && operator === "") {
+                    display.textContent = number1;
+                }
+                operator = number2 = "";
+                break;
+            case "clear":
+                display.textContent = number1 = "0";
+                operator = number2 = "";
+                break;
+            case "backspace":
+                if (operator === "" && number1.length > 1) {
+                    display.textContent = number1 = number1.slice(0, -1);
+                } else if (number2 !== "") {
+                    display.textContent = number2 = number2.slice(0, -1);
+                } else if (number1.length === 1) {
+                    display.textContent = number1 = "0";
+                }
+                break;
         }
-    }
-    return cleanedArray;
-}
+    })
+});
